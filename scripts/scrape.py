@@ -8,6 +8,7 @@ import pickle
 import pandas as pd
 
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 def cache(filename):
     def decorator(func):
@@ -36,11 +37,27 @@ def cache(filename):
 
 @cache('cache/scrape.pickle')
 def get_url(url):
+    print('Fetching', url)
     response = requests.get(url)
     if response.status_code == 200:
         return response.content
     else:
         return None
+
+def parse_html(content):
+    soup = BeautifulSoup(content, 'html.parser')
+    
+    table = soup.find('table')
+    headers = [header.text.strip() for header in table.find_all('th')]
+
+    rows = []
+    for row in table.find_all('tr'):
+        cells = row.find_all('td')
+        cells = [cell.text.strip() for cell in cells]
+        if len(cells) > 0:
+            rows.append(cells)
+
+    return pd.DataFrame(rows, columns=headers)
 
 def main(args):
     config_file = args[0]
@@ -54,23 +71,21 @@ def main(args):
         configs = json.load(file)
         
     for config in configs:
-        url = config['url']
+        event = config['event']
+        gender = config['gender']
 
-        content = get_url(url)
-        soup = BeautifulSoup(content, 'html.parser')
-        
-        table = soup.find('table')
-        headers = [header.text.strip() for header in table.find_all('th')]
+        todays_date = datetime.now().strftime('%Y-%m-%d')
 
-        rows = []
-        for row in table.find_all('tr'):
-            cells = row.find_all('td')
-            cells = [cell.text.strip() for cell in cells]
-            if len(cells) > 0:
-                rows.append(cells)
+        for page_number in range(1, 26):
+            url = config['url']
+            
+            url = url.replace("TODAYS_DATE", f"{todays_date}")
+            url = url.replace("PAGE_NUMBER", f"{page_number}")
 
-        df = pd.DataFrame(rows, columns=headers)
-        df.to_csv(f'{output_dir}/records.csv', index=False)
+            content = get_url(url)            
+            df = parse_html(content)
+            
+            df.to_csv(f'{output_dir}/{event} - {gender} - {page_number}.csv', index=False)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
