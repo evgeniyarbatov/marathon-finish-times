@@ -16,4 +16,8 @@ scrape: install
 	@source $(VENV_PATH)/bin/activate && \
 	python3 scripts/scrape.py "$(CONFIG_FILE)" $(OUTPUT_DIR)
 
-.PHONY: venv install scrape
+merge:
+	@source $(VENV_PATH)/bin/activate && \
+	python3 scripts/merge.py $(OUTPUT_DIR)
+
+.PHONY: venv install scrape merge

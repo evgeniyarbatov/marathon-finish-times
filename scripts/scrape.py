@@ -1,6 +1,5 @@
 import sys
 import requests
-import shutil
 import os
 import json
 import pickle
@@ -92,6 +91,22 @@ def main(args):
             df = parse_html(content)
             if df is None:
                 break
+            
+            df['Gender'] = gender
+            df['Event'] = event
+            
+            df = df[[
+                'Rank',
+                'Mark',
+                'Competitor',
+                'Gender',
+                'Event',
+                'DOB',
+                'Nat',
+                'Pos',
+                'Venue',
+                'Date',
+            ]]
             
             df.to_csv(f'{event_dir}/{page_number}.csv', index=False)
 
