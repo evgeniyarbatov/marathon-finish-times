@@ -8,7 +8,8 @@ import pickle
 import pandas as pd
 
 from bs4 import BeautifulSoup
-from datetime import datetime
+
+MAX_PAGE_COUNT = 50
 
 def cache(filename):
     def decorator(func):
@@ -48,8 +49,9 @@ def parse_html(content):
     soup = BeautifulSoup(content, 'html.parser')
     
     table = soup.find('table')
-    headers = [header.text.strip() for header in table.find_all('th')]
-
+    if table is None:
+        return None
+    
     rows = []
     for row in table.find_all('tr'):
         cells = row.find_all('td')
@@ -57,14 +59,14 @@ def parse_html(content):
         if len(cells) > 0:
             rows.append(cells)
 
+    headers = [header.text.strip() for header in table.find_all('th')]
+
     return pd.DataFrame(rows, columns=headers)
 
 def main(args):
     config_file = args[0]
     output_dir = args[1]
 
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
     os.makedirs(output_dir, exist_ok=True)
 
     with open(config_file, 'r') as file:
@@ -73,19 +75,25 @@ def main(args):
     for config in configs:
         event = config['event']
         gender = config['gender']
+        
+        date = config['date']
+        
+        event_dir = f"{output_dir}/{event.lower()}/{gender.lower()}"
+        os.makedirs(event_dir, exist_ok=True)
 
-        todays_date = datetime.now().strftime('%Y-%m-%d')
-
-        for page_number in range(1, 26):
+        for page_number in range(1, MAX_PAGE_COUNT):
             url = config['url']
             
-            url = url.replace("TODAYS_DATE", f"{todays_date}")
+            url = url.replace("TODAYS_DATE", f"{date}")
             url = url.replace("PAGE_NUMBER", f"{page_number}")
 
-            content = get_url(url)            
+            content = get_url(url)
+                        
             df = parse_html(content)
+            if df is None:
+                break
             
-            df.to_csv(f'{output_dir}/{event} - {gender} - {page_number}.csv', index=False)
+            df.to_csv(f'{event_dir}/{page_number}.csv', index=False)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
