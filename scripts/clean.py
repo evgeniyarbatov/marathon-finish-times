@@ -27,6 +27,30 @@ def main(args):
                 
                 df = df.sort_values(by='Rank', ascending=True)
                 
+                df.rename(columns={
+                    'Mark': 'Time', 
+                    'Competitor': 'Name',
+                    'DOB': 'Date of Birth',
+                    'Pos': 'Place',
+                    'Nat': 'Country',
+                    'Venue': 'City',
+                }, inplace=True)
+                
+                df = df[[
+                    'Rank',
+                    'Time',
+                    'Name',
+                    'Country',
+                    'Date of Birth',
+                    'Place',
+                    'City',
+                    'Date',
+                    'Gender',
+                    'Event',
+                ]]
+                
+                df['Name'] = df['Name'].str.title()
+                
                 df.to_csv(
                     f'{input_dir}/{event_dir}/{event_dir}.csv', 
                     index=False,
