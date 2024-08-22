@@ -8,7 +8,7 @@ import pandas as pd
 
 from bs4 import BeautifulSoup
 
-MAX_PAGE_COUNT = 50
+MAX_PAGE_COUNT = 100
 
 def cache(filename):
     def decorator(func):

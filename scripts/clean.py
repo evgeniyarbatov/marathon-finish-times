@@ -18,22 +18,20 @@ def main(args):
             os.path.join(input_dir, event_dir)
         ):
             for file in files:                
-                if (
-                    file == f'{event_dir}.csv'
-                    or not file.endswith('.csv')
-                ):
+                if file != f'{event_dir}.csv':
                     continue
                 
                 file_path = os.path.join(subdir, file)
+                
                 df = pd.read_csv(file_path)
-                dfs.append(df)
+                
+                df = df.sort_values(by='Rank', ascending=True)
+                
+                df.to_csv(
+                    f'{input_dir}/{event_dir}/{event_dir}.csv', 
+                    index=False,
+                )
 
-        all_dfs = pd.concat(dfs, ignore_index=True)
-        
-        all_dfs.to_csv(
-            f'{input_dir}/{event_dir}/{event_dir}.csv', 
-            index=False,
-        )
 
 if __name__ == "__main__":
     main(sys.argv[1:])
