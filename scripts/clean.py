@@ -54,6 +54,8 @@ def main(args):
                 for col in ['Date of Birth', 'Date']:
                     df[col] = pd.to_datetime(df[col], exact=False, dayfirst=True).dt.strftime('%d.%m.%Y')
                 
+                df['City'] = df['City'].str.replace(r'\s*\(.*\)|,.*', '', regex=True)
+                
                 df.to_csv(
                     f'{input_dir}/{event_dir}/{event_dir}.csv', 
                     index=False,
