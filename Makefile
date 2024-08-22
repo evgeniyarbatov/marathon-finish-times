@@ -24,4 +24,9 @@ clean:
 	@source $(VENV_PATH)/bin/activate && \
 	python3 scripts/clean.py $(OUTPUT_DIR)
 
-.PHONY: venv install scrape merge clean
+upload:
+	@source $(VENV_PATH)/bin/activate && \
+	export KAGGLE_KEY=f254df82ac823f1663bf3a7d9049ddb1 KAGGLE_USERNAME=evgenyarbatov; \
+	python3 scripts/upload.py $(OUTPUT_DIR)
+
+.PHONY: venv install scrape merge clean upload
