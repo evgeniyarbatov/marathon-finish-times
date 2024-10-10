@@ -16,15 +16,15 @@ scrape:
 	@source $(VENV_PATH)/bin/activate && \
 	python3 scripts/scrape.py "$(CONFIG_FILE)" $(OUTPUT_DIR)
 
-merge:
+merge: scrape
 	@source $(VENV_PATH)/bin/activate && \
 	python3 scripts/merge.py $(OUTPUT_DIR)
 
-clean:
+clean: merge
 	@source $(VENV_PATH)/bin/activate && \
 	python3 scripts/clean.py $(OUTPUT_DIR)
 
-upload:
+upload: clean
 	@source $(VENV_PATH)/bin/activate && \
 	export KAGGLE_KEY=f254df82ac823f1663bf3a7d9049ddb1 KAGGLE_USERNAME=evgenyarbatov; \
 	python3 scripts/upload.py $(OUTPUT_DIR)
