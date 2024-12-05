@@ -2,7 +2,7 @@
     "title": "marathon-running-times",
     "id": "evgenyarbatov/marathon-running-times",
     "subtitle": "Marathon running times",
-    "description": "Top marathon running times",
+    "description": "Top marathon running times. Data from https://worldathletics.org",
     "keywords": ["running", "marathon"],
     "resources": [
       {
