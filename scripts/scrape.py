@@ -38,7 +38,7 @@ def cache(filename):
 @cache('cache/scrape.pickle')
 def get_url(url):
     print('Fetching', url)
-    response = requests.get(url)
+    response = requests.get(url, verify=False)
     if response.status_code == 200:
         return response.content
     else:
