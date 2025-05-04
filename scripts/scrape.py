@@ -91,6 +91,9 @@ def main(args):
             df = parse_html(content)
             if df is None:
                 break
+
+            dob_index = df.columns.get_loc('DOB')
+            df.columns.values[dob_index + 1] = 'Nat'
             
             df['Gender'] = gender
             df['Event'] = event
